@@ -26,8 +26,6 @@ class ApiLoginController extends AbstractController
         $jsonSchema = json_decode('{
             "type": "object",
             "properties": {
-                "firstname": {"type": "string"},
-                "name": {"type": "string"},
                 "password": {"type": "string"},
                 "email": {"type": "string", "format": "email"}
             },
@@ -45,5 +43,15 @@ class ApiLoginController extends AbstractController
         $data = json_decode($request->getContent(), true);
         return $apiLogin->createToken($data);
 
+    }
+
+    #[Route('/api/user/info', name: 'app_security_get_user', methods: ['GET'])]
+    public function user(): JsonResponse
+    {
+        return new JsonResponse([
+            'email' => $this->getUser()->getEmail(),
+            'firstName' => $this->getUser()->getFirstname(),
+            'nom' => $this->getUser()->getName()
+        ]);
     }
 }

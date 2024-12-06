@@ -2,28 +2,45 @@
 
 ## Inscription
 
-**Endpoint** : `/api/security/registration`
+**Endpoint** : POST `/api/registration`
 
 **Body**
 ```json
 {
-  "email": "test1z2@test.com",
-  "password": "password",
-  "name": "souvignet",  // (facultatif)
-  "firstname": "baudry" // (facultatif)
+  "type": "object",
+  "properties": {
+    "firstname": {"type": "string"},
+    "name": {"type": "string"},
+    "password": {"type": "string"},
+    "email": {"type": "string", "format": "email"}
+  },
+  "required": ["password", "email"]
 }
 ```
 ## Connexion
 
-**Endpoint** : `/api/login-check`
+**Endpoint** : POST `/api/login`
 
 **Body**
 ```json
 {
-  "email": "test@test.com",
-  "password": "password"
-}
+  "type": "object",
+  "properties": {
+    "password": {"type": "string"},
+    "email": {"type": "string", "format": "email"}
+  },
+  "required": ["password", "email"]
+} 
+
 ```
 
+## Connexion
+
+**Endpoint** : GET `/api/user/info`
+
+**Body**
+```json
+noBody
+```
 
 

@@ -28,7 +28,7 @@ class ApiLogin
         if (!$user || !password_verify($data['password'], $user->getPassword())) {
             return new JsonResponse([
                 'code' => 404,
-                'message' => 'User not found'
+                'message' => 'Invalid credentials'
             ], JsonResponse::HTTP_NOT_FOUND);
         }
 

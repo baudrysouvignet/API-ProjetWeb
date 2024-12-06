@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class ApiRegistrationController extends AbstractController
 {
-    #[Route('/api/security/registration', name: 'app_security_api_registration', methods: ['POST'])]
+    #[Route('/api/registration', name: 'app_security_api_registration', methods: ['POST'])]
     public function index(
         Request $request,
         ApiRegistration $apiRegistration,
