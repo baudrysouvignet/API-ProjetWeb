@@ -2,6 +2,8 @@
 
 namespace App\Controller\Platforms;
 
+use App\Entity\JiraInfo;
+use App\Repository\JiraInfoRepository;
 use App\Service\Global\JsonValidator;
 use App\Service\Platforms\JiraLogin;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -11,7 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class JiraLoginController extends AbstractController
 {
-    #[Route('/api/user/platforms/jira/add', name: 'app_platforms_jira_login', methods: ['POST'])]
+    #[Route('/api/user/platforms/jira/add', name: 'app_platforms_jira_add', methods: ['POST'])]
     public function index(
         JsonValidator $validator,
         Request $request,
@@ -42,5 +44,26 @@ class JiraLoginController extends AbstractController
             $data['url'],
             $data['token']
         );
+    }
+
+    #[Route('/api/user/platforms/jira/delete/{id}', name: 'app_platforms_jira_delete', methods: ['POST'])]
+    public function delete(
+        JiraInfo $JiraInfo,
+        JiraInfoRepository $JiraInfoRepository
+    ): JsonResponse
+    {
+        if ($JiraInfo->getUser() !== $this->getUser()) {
+            return new JsonResponse([
+                'code' => 400,
+                'message' => 'You are not allowed to delete this Jira account'
+            ], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        $JiraInfoRepository->deleteJiraInfo($JiraInfo);
+
+        return new JsonResponse([
+            'code' => 200,
+            'message' => 'Jira account deleted'
+        ], JsonResponse::HTTP_OK);
     }
 }

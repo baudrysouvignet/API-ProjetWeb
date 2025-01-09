@@ -34,4 +34,10 @@ class JiraInfoRepository extends ServiceEntityRepository
         $this->_em->persist($jiraInfo);
         $this->_em->flush();
     }
+
+    public function deleteJiraInfo(JiraInfo $jiraInfo)
+    {
+        $this->_em->remove($jiraInfo);
+        $this->_em->flush();
+    }
 }
