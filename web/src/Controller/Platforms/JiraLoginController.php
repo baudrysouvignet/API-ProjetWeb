@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class JiraLoginController extends AbstractController
 {
-    #[Route('/api/user/platforms/add/jira', name: 'app_platforms_jira_login')]
+    #[Route('/api/user/platforms/jira/add', name: 'app_platforms_jira_login', methods: ['POST'])]
     public function index(
         JsonValidator $validator,
         Request $request,

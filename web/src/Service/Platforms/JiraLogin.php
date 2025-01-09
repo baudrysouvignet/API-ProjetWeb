@@ -2,17 +2,27 @@
 
 namespace App\Service\Platforms;
 
+use App\Repository\JiraInfoRepository;
 use App\Service\Global\RequestApi;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class JiraLogin
 {
     private $requestApi;
+    private $tokenStorage;
+    private $jiraInfoRepository;
 
-    public function __construct(RequestApi $requestApi)
+    public function __construct(
+        RequestApi $requestApi,
+        TokenStorageInterface $tokenStorage,
+        JiraInfoRepository $jiraInfoRepository
+    )
     {
         $this->requestApi = $requestApi;
+        $this->tokenStorage = $tokenStorage;
+        $this->jiraInfoRepository = $jiraInfoRepository;
     }
 
     public function connect(
@@ -37,6 +47,10 @@ class JiraLogin
                 'message' => 'Invalid credentials'
             ], JsonResponse::HTTP_NOT_FOUND);
         }
+
+        $user = $this->tokenStorage->getToken()->getUser();
+        $this->jiraInfoRepository->createJirainfo($user, $url, $auth_string);
+
 
         return new JsonResponse([
             'code' => 200,

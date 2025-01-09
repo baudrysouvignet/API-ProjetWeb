@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\JiraInfo;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -11,33 +13,25 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class JiraInfoRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private EntityManagerInterface $_em;
+
+    public function __construct(ManagerRegistry $registry, EntityManagerInterface $em)
     {
         parent::__construct($registry, JiraInfo::class);
+        $this->_em = $em;
     }
 
-    //    /**
-    //     * @return JiraInfo[] Returns an array of JiraInfo objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('j')
-    //            ->andWhere('j.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('j.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?JiraInfo
-    //    {
-    //        return $this->createQueryBuilder('j')
-    //            ->andWhere('j.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function createJirainfo(
+        User $user,
+        string $url,
+        string $token,
+    )
+    {
+        $jiraInfo = (new JiraInfo())
+            ->setUser($user)
+            ->setUrl($url)
+            ->setApiToken($token);
+        $this->_em->persist($jiraInfo);
+        $this->_em->flush();
+    }
 }

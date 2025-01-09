@@ -43,4 +43,21 @@
 noBody
 ```
 
+# Jira
 
+## Ajouter un compte
+
+**Endpoint** : POST `/api/user/platforms/jira/add`
+
+**Body**
+```json
+{
+    "type": "object",
+    "properties": {
+        "url": {"type": "string"},
+        "emailJira": {"type": "string", "format": "email"},
+        "token": {"type": "string"}
+    },
+    "required": ["url", "emailJira", "token"]
+}
+```
