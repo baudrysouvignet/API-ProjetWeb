@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   web:
-    container_name: "nginx-api"
+    container_name: "${COMPOSE_PROJECT_NAME}-nginx-api"
     image: nginx:latest
     ports:
       - "8000:80"
@@ -13,7 +13,7 @@ services:
       - php
 
   php:
-    container_name: "php-api"
+    container_name: "${COMPOSE_PROJECT_NAME}-php-api"
     volumes:
       - ../web:/var/www/html
     environment:
@@ -30,7 +30,7 @@ services:
       - db
 
   db:
-    container_name: "database-api"
+    container_name: "${COMPOSE_PROJECT_NAME}-database-api"
     image: mariadb:latest
     ports:
       - "3316:3306"
@@ -44,7 +44,7 @@ services:
     command: --innodb-use-native-aio=0
 
   phpmyadmin:
-    container_name: "phpmyadmin-api"
+    container_name: "${COMPOSE_PROJECT_NAME}-phpmyadmin-api"
     image: phpmyadmin/phpmyadmin
     ports:
       - "8082:80"
