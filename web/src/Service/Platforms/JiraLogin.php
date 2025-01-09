@@ -38,6 +38,18 @@ class JiraLogin
             ], JsonResponse::HTTP_NOT_FOUND);
         }
 
+        $jiraInfo = $this->jiraInfoRepository->findOneBy([
+            'url' => $url,
+            'user' => $this->tokenStorage->getToken()->getUser()
+        ]);
+        if ($jiraInfo) {
+            return new JsonResponse([
+                'code' => 400,
+                'message' => 'You already have a Jira account with this url'
+            ], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+
         $auth_string = base64_encode("$email:$token");
 
         $testConnexion = $this->testConnexion($url, $auth_string);

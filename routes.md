@@ -34,9 +34,18 @@
 
 ```
 
-## Connexion
+## Recuperer les info du compte
 
 **Endpoint** : GET `/api/user/info`
+
+**Body**
+```json
+noBody
+```
+
+## Recuperer les platforms
+
+**Endpoint** : GET `/api/user/platforms`
 
 **Body**
 ```json
@@ -60,4 +69,13 @@ noBody
     },
     "required": ["url", "emailJira", "token"]
 }
+```
+
+## Supprimer un compte
+
+**Endpoint** : GET `/api/user/platforms`
+
+**Body**
+```json
+noBody
 ```
