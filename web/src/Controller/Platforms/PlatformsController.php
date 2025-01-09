@@ -2,6 +2,7 @@
 
 namespace App\Controller\Platforms;
 
+use App\Service\Global\Cryptage;
 use App\Service\Platforms\PlatfomrsServcie;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -11,7 +12,8 @@ class PlatformsController extends AbstractController
 {
     #[Route('/api/user/platforms', name: 'app_platforms_platforms', methods: ['GET'])]
     public function index(
-        PlatfomrsServcie $platformsService
+        PlatfomrsServcie $platformsService,
+        Cryptage $cryptage
     ): JsonResponse
     {
         return new JsonResponse([

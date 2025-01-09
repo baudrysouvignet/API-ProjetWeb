@@ -18,6 +18,7 @@ services:
       - ../web:/var/www/html
     environment:
       - APP_ENV=${APP_ENV}
+      - CRYPTAGE_KEY=${CRYPTAGE_KEY}
       - APP_SECRET=${APP_SECRET}
       - DATABASE_URL=${DATABASE_URL}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}

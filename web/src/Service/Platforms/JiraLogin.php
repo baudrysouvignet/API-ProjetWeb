@@ -3,6 +3,7 @@
 namespace App\Service\Platforms;
 
 use App\Repository\JiraInfoRepository;
+use App\Service\Global\Cryptage;
 use App\Service\Global\RequestApi;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -14,15 +15,19 @@ class JiraLogin
     private $tokenStorage;
     private $jiraInfoRepository;
 
+    private $cryptage;
+
     public function __construct(
         RequestApi $requestApi,
         TokenStorageInterface $tokenStorage,
-        JiraInfoRepository $jiraInfoRepository
+        JiraInfoRepository $jiraInfoRepository,
+        Cryptage $cryptage
     )
     {
         $this->requestApi = $requestApi;
         $this->tokenStorage = $tokenStorage;
         $this->jiraInfoRepository = $jiraInfoRepository;
+        $this->cryptage = $cryptage;
     }
 
     public function connect(
@@ -60,8 +65,9 @@ class JiraLogin
             ], JsonResponse::HTTP_NOT_FOUND);
         }
 
+        $token_crypted= $this->cryptage->encrypt($auth_string);
         $user = $this->tokenStorage->getToken()->getUser();
-        $this->jiraInfoRepository->createJirainfo($user, $url, $auth_string);
+        $this->jiraInfoRepository->createJirainfo($user, $url, $token_crypted);
 
 
         return new JsonResponse([
@@ -83,7 +89,7 @@ class JiraLogin
         ];
 
         try {
-            $data = $this->requestApi->send('GET', $apiUrl, $headers);
+            $this->requestApi->send('GET', $apiUrl, $headers);
             return true;
         } catch (\Exception $e) {
             return false;
