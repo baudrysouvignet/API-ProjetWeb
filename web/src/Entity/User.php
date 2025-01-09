@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -39,6 +41,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $lastConnexion = null;
+
+    /**
+     * @var Collection<int, JiraInfo>
+     */
+    #[ORM\OneToMany(targetEntity: JiraInfo::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $jiraAccounts;
+
+    public function __construct()
+    {
+        $this->jiraAccounts = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -147,6 +160,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastConnexion(?\DateTimeImmutable $lastConnexion): static
     {
         $this->lastConnexion = $lastConnexion;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, JiraInfo>
+     */
+    public function getJiraAccounts(): Collection
+    {
+        return $this->jiraAccounts;
+    }
+
+    public function addJiraAccount(JiraInfo $jiraAccount): static
+    {
+        if (!$this->jiraAccounts->contains($jiraAccount)) {
+            $this->jiraAccounts->add($jiraAccount);
+            $jiraAccount->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeJiraAccount(JiraInfo $jiraAccount): static
+    {
+        if ($this->jiraAccounts->removeElement($jiraAccount)) {
+            // set the owning side to null (unless already changed)
+            if ($jiraAccount->getUser() === $this) {
+                $jiraAccount->setUser(null);
+            }
+        }
 
         return $this;
     }
