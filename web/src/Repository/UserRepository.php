@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
@@ -14,9 +15,14 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
  */
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
 {
-    public function __construct(ManagerRegistry $registry)
+    private JWTTokenManagerInterface $jwtManager;
+
+
+    public function __construct(ManagerRegistry $registry,
+    JWTTokenManagerInterface $jwtManager)
     {
         parent::__construct($registry, User::class);
+        $this->jwtManager = $jwtManager;
     }
 
     public function setLastConnexion(User $user)
@@ -37,6 +43,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $user->setPassword($newHashedPassword);
         $this->getEntityManager()->persist($user);
         $this->getEntityManager()->flush();
+    }
+
+    public function getJWTToken(
+        User $user
+    )
+    {
+        return $this->jwtManager->create($user);
     }
 
     //    /**

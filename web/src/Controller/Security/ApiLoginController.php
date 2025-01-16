@@ -3,6 +3,7 @@
 namespace App\Controller\Security;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
 use App\Service\Global\JsonValidator;
 use App\Service\Security\ApiLogin;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,9 +21,11 @@ class ApiLoginController extends AbstractController
         EntityManagerInterface $entityManager,
         Request $request,
         JWTTokenManagerInterface $JWTTokenManager,
-        ApiLogin $apiLogin
+        ApiLogin $apiLogin,
+        UserRepository $userRepository
     ): JsonResponse
     {
+
         $jsonSchema = json_decode('{
             "type": "object",
             "properties": {

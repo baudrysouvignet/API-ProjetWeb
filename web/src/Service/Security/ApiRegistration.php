@@ -4,6 +4,7 @@ namespace App\Service\Security;
 
 
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -19,10 +20,13 @@ class ApiRegistration
 
 
     private EntityManagerInterface $entityManager;
+    private UserRepository $userRepository;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, UserRepository $userRepository)
     {
         $this->entityManager = $entityManager;
+        $this->userRepository = $userRepository;
+
     }
 
     public function validateAndCreateUser(
@@ -68,6 +72,7 @@ class ApiRegistration
 
         return new JsonResponse([
             'code' => self::CODE_CREATED,
+            'token' => $this->userRepository->getJWTToken($user),
             'message' => self::MESSAGE_USER_CREATED_SUCCESS,
         ], JsonResponse::HTTP_CREATED);
     }
