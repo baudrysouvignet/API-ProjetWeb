@@ -25,7 +25,6 @@ class ApiLogin
     {
         $user = $this->userRepository->findOneBy(['email' => $data['email']]);
 
-
         if (!$user || !password_verify($data['password'], $user->getPassword())) {
             return new JsonResponse([
                 'code' => 404,

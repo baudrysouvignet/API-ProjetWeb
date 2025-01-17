@@ -58,6 +58,7 @@ noBody
 
 **Endpoint** : POST `/api/user/platforms/jira/add`
 
+
 **Body**
 ```json
 {
