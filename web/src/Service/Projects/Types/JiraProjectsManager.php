@@ -18,6 +18,7 @@ class JiraProjectsManager
         array $data
     ): JsonResponse
     {
+        dd($data);
         return new JsonResponse([
             'code' => 200,
             'message' => 'Jira project created'
