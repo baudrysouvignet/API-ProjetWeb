@@ -10,14 +10,17 @@ class PlatfomrsServcie
 {
     private RequestApi $requestApi;
     private Cryptage $cryptage;
+    private JiraInfoService $jiraInfoService;
 
     public function __construct(
         RequestApi $requestApi,
-        Cryptage $cryptage
+        Cryptage $cryptage,
+        JiraInfoService $jiraInfoService
     )
     {
         $this->requestApi = $requestApi;
         $this->cryptage = $cryptage;
+        $this->jiraInfoService = $jiraInfoService;
     }
 
     public function getPlatforms(
@@ -37,10 +40,12 @@ class PlatfomrsServcie
             $data[] = [
                 "type" => "jira",
                 "url" => $jiraAccount->getUrl(),
+                "id" => $jiraAccount->getId(),
                 "projects" => $this->getJiraProjects(
                     $jiraAccount->getUrl(),
                     $jiraAccount->getApiToken()
-                )
+                ),
+
             ];
         }
         return $data;
@@ -52,7 +57,7 @@ class PlatfomrsServcie
     ): array
     {
         $auth_string = $this->cryptage->decrypt($auth_string);
-        $apiUrl = "https://$url/rest/api/3/project";
+        $apiUrl = "https://$url/rest/agile/1.0/board?projectKey=CCS";
 
         $headers = [
             'Authorization' => "Basic $auth_string"
@@ -61,10 +66,18 @@ class PlatfomrsServcie
         try {
             $return = [];
             $data = $this->requestApi->send('GET', $apiUrl, $headers);
-            foreach ($data as $project) {
+
+            foreach ($data['values'] as $project) {
+
                 $return[] = [
-                    "id" => $project['id'],
-                    "name" => $project['name']
+                    "boardId" => $project['id'],
+                    "projectId" => $project['location']['projectId'],
+                    "name" => $project['name'],
+                    'issuesType' => $this->jiraInfoService->getJiraProjectsInfo(
+                        $url,
+                        $auth_string,
+                        $project['location']['projectId']
+                    )
                 ];
             }
             return $return;

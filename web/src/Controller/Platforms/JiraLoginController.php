@@ -5,6 +5,7 @@ namespace App\Controller\Platforms;
 use App\Entity\JiraInfo;
 use App\Repository\JiraInfoRepository;
 use App\Service\Global\JsonValidator;
+use App\Service\Platforms\JiraInfoService;
 use App\Service\Platforms\JiraLogin;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
