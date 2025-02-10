@@ -72,7 +72,7 @@ noBody
 }
 ```
 
-## Supprimer un compte
+## Récuperer les comptes du user
 
 **Endpoint** : GET `/api/user/platforms`
 
