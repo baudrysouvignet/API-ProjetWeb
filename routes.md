@@ -80,3 +80,36 @@ noBody
 ```json
 noBody
 ```
+
+## Créer un projet
+
+**Endpoint** : POST `api/user/projects/create`
+
+**Body**
+```json
+{
+  "properties": {
+    "type": {"type": "string"},
+    "title": {"type": "string"},
+    "info": {
+      "type": "object",
+      "properties": {
+        "account": {"type": "integer"},
+        "id": {"type": "integer"},
+        "issues": {"type": "integer"}
+      },
+      "required": ["account", "id", "issues"]
+    }
+  },
+  "required": ["type", "title", "info"]
+}
+```
+
+## Recuperer les projets
+
+**Endpoint** : GET `/api/user/projects`
+
+**Body**
+```json
+noBody
+```
