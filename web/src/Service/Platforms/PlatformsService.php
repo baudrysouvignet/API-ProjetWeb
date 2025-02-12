@@ -6,7 +6,7 @@ use App\Entity\User;
 use App\Service\Global\Cryptage;
 use App\Service\Global\RequestApi;
 
-class PlatfomrsServcie
+class PlatformsService
 {
     private RequestApi $requestApi;
     private Cryptage $cryptage;
