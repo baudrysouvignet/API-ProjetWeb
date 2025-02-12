@@ -58,6 +58,6 @@ class CreateProjectController extends AbstractController
         ProjectsManager $projectsManager
     ): JsonResponse
     {
-        return new JsonResponse($projectsManager->getProject());
+        return new JsonResponse($projectsManager->getProject($this->getUser()));
     }
 }

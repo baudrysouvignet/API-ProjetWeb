@@ -4,6 +4,7 @@ namespace App\Service\Projects;
 
 
 use App\Entity\JiraProject;
+use App\Entity\User;
 use App\Service\Projects\Types\JiraProjectsManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -39,16 +40,10 @@ class ProjectsManager
         ], JsonResponse::HTTP_BAD_REQUEST);
     }
 
-    public function getProject(): array
+    public function getProject(
+        User $user
+    ): array
     {
-        $result = [];
-        foreach ($this->em->getRepository(JiraProject::class)->findAll() as $value) {
-            $result [] = [
-                'id' => $value->getId(),
-                'title' => $value->getTitle(),
-                'type'=> 'jira',
-            ];
-        }
-        return $result;
+        return $this->em->getRepository(User::class)->getJiraProject($user);
     }
 }
