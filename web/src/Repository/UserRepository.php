@@ -2,7 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\JiraInfo;
 use App\Entity\User;
+use App\Service\Global\Cryptage;
+use App\Service\Platforms\JiraInfoService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
@@ -16,13 +19,16 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
 {
     private JWTTokenManagerInterface $jwtManager;
-
+    private JiraInfoService $jiraInfoService;
+    private Cryptage $cryptage;
 
     public function __construct(ManagerRegistry $registry,
-    JWTTokenManagerInterface $jwtManager)
+    JWTTokenManagerInterface $jwtManager, JiraInfoService $jiraInfoService, Cryptage $cryptage)
     {
         parent::__construct($registry, User::class);
         $this->jwtManager = $jwtManager;
+        $this->jiraInfoService = $jiraInfoService;
+        $this->cryptage = $cryptage;
     }
 
     public function setLastConnexion(User $user)
@@ -50,6 +56,34 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     )
     {
         return $this->jwtManager->create($user);
+    }
+
+    public function getJiraProject(User $user): array
+    {
+        $jiraInfos = $this->getEntityManager()->getRepository(JiraInfo::class)->findBy(['user' => $user]);
+        $jiraProjects = [];
+        foreach ($jiraInfos as $jiraInfo) {
+            foreach ($jiraInfo->getJiraProjects() as $jiraProject) {
+                $projectsIssues = $this->jiraInfoService->getJiraProjectsInfo(
+                    $jiraInfo->getUrl(),
+                    $this->cryptage->decrypt($jiraInfo->getApiToken()),
+                    $jiraProject->getProjectJira()
+                );
+
+                $jiraProjects[] = [
+                    'id' => $jiraProject->getId(),
+                    'title' => $jiraProject->getTitle(),
+                    'type' => 'jira',
+                    'info' => [
+                        'account' => $jiraProject->getJiraInfo()->getId(),
+                        'issues' =>array_values(array_filter($projectsIssues, function($project) use ($jiraProject) {
+                            return $project['id'] == $jiraProject->getIssueTypes();
+                        }))[0]['name']
+                    ]
+                ];
+            }
+        }
+        return $jiraProjects;
     }
 
     //    /**
