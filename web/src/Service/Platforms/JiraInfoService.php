@@ -37,6 +37,9 @@ class JiraInfoService
 
         $result = [];
         foreach ($value["issueTypes"] as $issues) {
+            if ($issues["subtask"] == true) {
+                continue;
+            }
             $result[] = [
                 "name" => $issues["name"],
                 "id" => $issues["id"]

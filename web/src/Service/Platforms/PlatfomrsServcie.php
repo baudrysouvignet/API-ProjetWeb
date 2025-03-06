@@ -37,6 +37,7 @@ class PlatfomrsServcie
     {
         $data = [];
         foreach ($user->getJiraAccounts() as $jiraAccount) {
+
             $data[] = [
                 "type" => "jira",
                 "url" => $jiraAccount->getUrl(),
@@ -68,8 +69,8 @@ class PlatfomrsServcie
             $data = $this->requestApi->send('GET', $apiUrl, $headers);
 
             foreach ($data['values'] as $project) {
-
                 $return[] = [
+
                     "boardId" => $project['id'],
                     "projectId" => $project['location']['projectId'],
                     "name" => $project['name'],
