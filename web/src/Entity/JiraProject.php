@@ -2,7 +2,10 @@
 
 namespace App\Entity;
 
+use App\Entity\Project\Lignes;
 use App\Repository\JiraProjectRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: JiraProjectRepository::class)]
@@ -24,6 +27,17 @@ class JiraProject
 
     #[ORM\Column]
     private ?int $IssueTypes = null;
+
+    /**
+     * @var Collection<int, Lignes>
+     */
+    #[ORM\OneToMany(targetEntity: Lignes::class, mappedBy: 'project')]
+    private Collection $lignes;
+
+    public function __construct()
+    {
+        $this->lignes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -74,6 +88,36 @@ class JiraProject
     public function setIssueTypes(int $IssueTypes): static
     {
         $this->IssueTypes = $IssueTypes;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Lignes>
+     */
+    public function getLignes(): Collection
+    {
+        return $this->lignes;
+    }
+
+    public function addLigne(Lignes $ligne): static
+    {
+        if (!$this->lignes->contains($ligne)) {
+            $this->lignes->add($ligne);
+            $ligne->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLigne(Lignes $ligne): static
+    {
+        if ($this->lignes->removeElement($ligne)) {
+            // set the owning side to null (unless already changed)
+            if ($ligne->getProject() === $this) {
+                $ligne->setProject(null);
+            }
+        }
 
         return $this;
     }

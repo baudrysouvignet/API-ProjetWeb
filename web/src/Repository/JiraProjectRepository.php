@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\JiraInfo;
 use App\Entity\JiraProject;
+use App\Entity\Project\Lignes;
+use App\Entity\Project\TypesLignes;
 use App\Service\Global\Cryptage;
 use App\Service\Global\RequestApi;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -64,12 +66,29 @@ class JiraProjectRepository extends ServiceEntityRepository
             ->setProjectJira($id)
             ->setTitle('Project Jira');
         $this->em->persist($project);
+        $this->addDefaultLignes($project);
         $this->em->flush();
+
+
 
         return new JsonResponse([
             'code' => 200,
             'message' => 'Project created'
         ], JsonResponse::HTTP_OK);
+    }
+
+    private function addDefaultLignes(
+        JiraProject $project
+    )
+    {
+        for ($i = 0; $i < 2; $i++) {
+            $lignes = (new Lignes())
+                ->setProject($project)
+                ->setType(
+                    $this->em->getRepository(TypesLignes::class)->findAll()[$i]
+                );
+            $this->em->persist($lignes);
+        }
     }
 
     private function testProjectInfo(

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Project\Lignes;
 use App\Repository\JiraInfoRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -31,9 +32,16 @@ class JiraInfo
     #[ORM\OneToMany(targetEntity: JiraProject::class, mappedBy: 'JiraInfo')]
     private Collection $jiraProjects;
 
+    /**
+     * @var Collection<int, Lignes>
+     */
+    #[ORM\OneToMany(targetEntity: Lignes::class, mappedBy: 'project')]
+    private Collection $lignes;
+
     public function __construct()
     {
         $this->jiraProjects = new ArrayCollection();
+        $this->lignes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -101,6 +109,36 @@ class JiraInfo
             // set the owning side to null (unless already changed)
             if ($jiraProject->getJiraInfo() === $this) {
                 $jiraProject->setJiraInfo(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Lignes>
+     */
+    public function getLignes(): Collection
+    {
+        return $this->lignes;
+    }
+
+    public function addLigne(Lignes $ligne): static
+    {
+        if (!$this->lignes->contains($ligne)) {
+            $this->lignes->add($ligne);
+            $ligne->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLigne(Lignes $ligne): static
+    {
+        if ($this->lignes->removeElement($ligne)) {
+            // set the owning side to null (unless already changed)
+            if ($ligne->getProject() === $this) {
+                $ligne->setProject(null);
             }
         }
 

@@ -46,4 +46,25 @@ class ProjectsManager
     {
         return $this->em->getRepository(User::class)->getJiraProject($user);
     }
+    public function getLignes(
+        array $data
+    ): JsonResponse
+    {
+        $services = [];
+        foreach (glob(__DIR__ . '/Types/*.php') as $file) {
+            $services[] = basename($file, '.php');
+        }
+
+        foreach ($services as $service) {
+            $service = 'App\Service\Projects\Types\\' . $service;
+            $service = new $service($this->em);
+            if ($service->isValidate($data['type'])) {
+                return new JsonResponse($service->getLignes($data['id']));
+            }
+        }
+        return new JsonResponse([
+            'code' => 400,
+            'message' => 'Invalid project type'
+        ], JsonResponse::HTTP_BAD_REQUEST);
+    }
 }

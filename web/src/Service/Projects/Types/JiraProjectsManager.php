@@ -5,6 +5,7 @@ namespace App\Service\Projects\Types;
 
 use App\Entity\JiraInfo;
 use App\Entity\JiraProject;
+use App\Entity\Project\Lignes;
 use App\Repository\JiraProjectRepository;
 use App\Service\Platforms\JiraInfoService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -34,5 +35,32 @@ class JiraProjectsManager
             $data['info']['id'],
             $data['info']['issues']
         );
+    }
+
+    public function getLignes(int $id): array{
+
+        $project = $this->em->getRepository(JiraProject::class)->findOneBy(
+            ['id' => $id]
+        );
+        if (!$project){
+            return [
+                'code' => 400,
+                'message' => 'Invalid project'
+            ];
+        }
+
+        $lignes = $this->em->getRepository(Lignes::class)->findBy(
+            ['project' => $id]
+        );
+        $result = [];
+        foreach ($lignes as $ligne){
+            $result[] = [
+                'id' => $ligne->getId(),
+                'prompt' => $ligne->getPrompt(),
+                'issueTypes' => $ligne->getType()->getTitle(),
+                'issueTypesId' => $ligne->getType()->getId(),
+            ];
+        }
+        return $result;
     }
 }
