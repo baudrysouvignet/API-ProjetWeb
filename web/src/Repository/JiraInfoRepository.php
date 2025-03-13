@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\JiraInfo;
 use App\Entity\User;
+use App\Service\Global\Cryptage;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -14,11 +15,13 @@ use Doctrine\Persistence\ManagerRegistry;
 class JiraInfoRepository extends ServiceEntityRepository
 {
     private EntityManagerInterface $_em;
+    private Cryptage $cryptage;
 
-    public function __construct(ManagerRegistry $registry, EntityManagerInterface $em)
+    public function __construct(ManagerRegistry $registry, EntityManagerInterface $em, Cryptage $cryptage)
     {
         parent::__construct($registry, JiraInfo::class);
         $this->_em = $em;
+        $this->cryptage = $cryptage;
     }
 
     public function createJirainfo(
@@ -39,5 +42,10 @@ class JiraInfoRepository extends ServiceEntityRepository
     {
         $this->_em->remove($jiraInfo);
         $this->_em->flush();
+    }
+
+    public function decrypteToken(JiraInfo $jiraInfo): string
+    {
+        return $this->cryptage->decrypt($jiraInfo->getApiToken());
     }
 }

@@ -103,6 +103,80 @@ class JiraProjectRepository extends ServiceEntityRepository
 
     }
 
+    public function findDataForTicket(JiraProject $project): array
+    {
+        $token = $this->cryptage->decrypt($project->getJiraInfo()->getApiToken());
+        $url = $project->getJiraInfo()->getUrl();
+        $projectId = $project->getProjectJira();
+
+        $apiUrl = "https://$url/rest/api/3/project/$projectId";
+
+        $headers = [
+            'Authorization' => "Basic $token",
+            'Content-Type' => 'application/json',
+        ];
+        $value = $this->requestApi->send('GET', $apiUrl, $headers);
+
+        $return = ['key' => $value['key']];
+        foreach ($value['issueTypes'] as $issue) {
+            if ($issue['id'] == $project->getIssueTypes()) {
+                $return['issue'] = $issue['name'];
+                break;
+            }
+        }
+        if (!isset($return['issue'])) {
+            return [];
+        }
+        return $return;
+    }
+
+    public function createTicket(
+        string $url,
+        string $token,
+        array $data,
+        array $params,
+    )
+    {
+        $apiUrl = "https://$url/rest/api/3/issue";
+
+        $headers = [
+            'Authorization' => "Basic $token",
+            'Content-Type' => 'application/json',
+        ];
+
+        $data = [
+            "fields" => [
+                "project" => [
+                    "key" => $params['key']
+                ],
+                "summary" => $data['title'],
+                "description" => [
+                    "version" => 1,
+                    "type" => "doc",
+                    "content" => [
+                        [
+                            "type" => "paragraph",
+                            "content" => [
+                                [
+                                    "type" => "text",
+                                    "text" => $data['description']
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                "issuetype" => [
+                    "name" => $params['issue']
+                ],
+                "priority"=> [
+                    "name"=> $data['priority']
+                ]
+            ]
+        ];
+
+        $this->requestApi->send('POST', $apiUrl, $headers, $data);
+    }
+
     //    /**
     //     * @return JiraProject[] Returns an array of JiraProject objects
     //     */

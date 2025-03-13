@@ -18,11 +18,15 @@ class RequestApi
         string $method,
         string $apiUrl,
         array $headers,
-    ): array
-    {
-        $response = $this->client->request($method, $apiUrl, [
-            'headers' => $headers,
-        ]);
+        array $body = []
+    ): array {
+        $options = ['headers' => $headers];
+
+        if (!empty($body)) {
+            $options['json'] = $body;
+        }
+
+        $response = $this->client->request($method, $apiUrl, $options);
 
         return $response->toArray();
     }
