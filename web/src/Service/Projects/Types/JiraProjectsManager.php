@@ -6,6 +6,7 @@ namespace App\Service\Projects\Types;
 use App\Entity\JiraInfo;
 use App\Entity\JiraProject;
 use App\Entity\Project\Lignes;
+use App\Entity\User;
 use App\Repository\JiraProjectRepository;
 use App\Service\Platforms\JiraInfoService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -35,6 +36,29 @@ class JiraProjectsManager
             $data['info']['id'],
             $data['info']['issues']
         );
+    }
+
+    public function addDescription(
+        array $data,
+        User $user
+    ): JsonResponse
+    {
+        $project = $this->em->getRepository(JiraProject::class)->findOneBy(
+            ['id' => $data['id']]
+        );
+        if (!$project || $project->getJiraInfo()->getUser() !== $user){
+            return new JsonResponse([
+                'code' => 400,
+                'message' => 'Invalid project'
+            ], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        $project->setDescription($data['description']);
+        $this->em->flush();
+        return new JsonResponse([
+            'code' => 200,
+            'message' => 'Description added'
+        ], JsonResponse::HTTP_OK);
     }
 
     public function getLignes(int $id): array{

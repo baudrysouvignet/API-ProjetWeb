@@ -67,4 +67,27 @@ class ProjectsManager
             'message' => 'Invalid project type'
         ], JsonResponse::HTTP_BAD_REQUEST);
     }
+
+    public function addDescription(
+        array $data,
+        User $user
+    )
+    {
+        $services = [];
+        foreach (glob(__DIR__ . '/Types/*.php') as $file) {
+            $services[] = basename($file, '.php');
+        }
+
+        foreach ($services as $service) {
+            $service = 'App\Service\Projects\Types\\' . $service;
+            $service = new $service($this->em);
+            if ($service->isValidate($data['type'])) {
+                return new JsonResponse($service->addDescription($data, $user));
+            }
+        }
+        return new JsonResponse([
+            'code' => 400,
+            'message' => 'Invalid project type'
+        ], JsonResponse::HTTP_BAD_REQUEST);
+    }
 }

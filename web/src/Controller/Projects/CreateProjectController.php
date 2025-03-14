@@ -60,4 +60,38 @@ class CreateProjectController extends AbstractController
     {
         return new JsonResponse($projectsManager->getProject($this->getUser()));
     }
+
+    #[Route('/api/user/projects/set/description/{platform}/{id}', name: 'app_projects_get_project', methods: ['GET'])]
+    public function description(
+        ProjectsManager $projectsManager,
+        int $id,
+        string $platform,
+        Request $request,
+        JsonValidator $validator
+    ): JsonResponse
+    {
+        $jsonSchema = json_decode('{
+            "type": "object",
+            "properties": {
+                "description": {"type": "string"}
+            },
+            "required": ["description"]
+        }');
+
+        $validate = $validator->validateJson(json_decode($request->getContent(), false), $jsonSchema);
+
+        if ($validate) {
+            return new JsonResponse([
+                'code' => 400,
+                'message' => $validate
+            ], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        $data = [
+            'id' => $id,
+            'type' => $platform,
+            'description' => json_decode($request->getContent(), true)['description']
+        ];
+        return new JsonResponse($projectsManager->addDescription($data, $this->getUser()));
+    }
 }

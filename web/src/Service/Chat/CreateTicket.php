@@ -38,4 +38,24 @@ class CreateTicket
             'message' => 'Invalid project type'
         ], JsonResponse::HTTP_BAD_REQUEST);
     }
+
+    public function getTicket(
+        string $platform,
+        int $projectId
+    ): array
+    {
+        $services = [];
+        foreach (glob(__DIR__ . '/Types/*.php') as $file) {
+            $services[] = basename($file, '.php');
+        }
+
+        foreach ($services as $service) {
+            $service = 'App\Service\Chat\Types\\' . $service;
+            $service = new $service($this->em);
+            if ($service->isValidate($platform)) {
+                return $service->get($projectId);
+            }
+        }
+        return [];
+    }
 }

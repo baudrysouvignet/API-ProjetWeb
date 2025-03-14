@@ -73,4 +73,24 @@ class JiraCreateTicket
     {
         return $this->em->getRepository(JiraProject::class)->findDataForTicket($this->getProject($id));
     }
+
+    public function get(
+        int $id
+    )
+    {
+        $project = $this->em->getRepository(JiraProject::class)->find([
+            'id' => $id
+        ]);
+        if (!$project) {
+            return [];
+        }
+        $lignes = [];
+        foreach ($project->getLignes() as $ligne) {
+            $lignes[$ligne->getType()->getTitle()] = [
+                'prompt' => $ligne->getPrompt()
+            ];
+        }
+        $lignes["priority"] = ["isAdmin"=> True];
+        return $lignes;
+    }
 }

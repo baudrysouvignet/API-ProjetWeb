@@ -11,23 +11,30 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class SendDataController extends AbstractController
 {
-    #[Route('/api/chat/{id}', name: 'app_chat_send_data')]
-    public function index(): JsonResponse
+    #[Route('/api/chat/{platform}/{id}', name: 'app_chat_send_data')]
+    public function index(
+        Request $request,
+        JsonValidator $validator,
+        string $platform,
+        int $id,
+        CreateTicket $createTicket
+    ): JsonResponse
     {
+        $tickets = $createTicket->getTicket($platform, $id);
+        $finalResponse = [];
+        foreach ($tickets as $key => $value) {
+            $finalResponse[$key] = "string";
+        }
+
         return new JsonResponse([
-            'finalResponse' => [
-                "title"=>"string",
-                "description"=>"string",
-                "subtitle"=>"string",
-                "priority"=>"string"
-            ],
             'responses' => [
                 "message"=>"string"
             ],
             'client' => [
-                "title"=>["prompt"=> "une description Simple du probléme"],
-                "description"=>["prompt"=> "Je veux connaitre la page, le téme du navigateur (clair/sombre) et la derniére action qu'il a fait sur le site"],
-                "priority"=>["isAdmin"=> True]
+                ... $tickets
+            ],
+            'finalResponse' => [
+                ... $finalResponse
             ]
         ]);
     }

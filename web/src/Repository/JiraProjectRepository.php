@@ -193,31 +193,12 @@ class JiraProjectRepository extends ServiceEntityRepository
             ]
         ];
 
-        $this->requestApi->send('POST', $apiUrl, $headers, $data);
+        try {
+            $this->requestApi->send('POST', $apiUrl, $headers, $data);
+        } catch (\Exception $e) {
+            unset($data['fields']['priority']);
+            $this->requestApi->send('POST', $apiUrl, $headers, $data);
+        }
+
     }
-
-    //    /**
-    //     * @return JiraProject[] Returns an array of JiraProject objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('j')
-    //            ->andWhere('j.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('j.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?JiraProject
-    //    {
-    //        return $this->createQueryBuilder('j')
-    //            ->andWhere('j.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }
