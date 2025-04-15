@@ -87,4 +87,13 @@ class JiraProjectsManager
         }
         return $result;
     }
+
+    public function setLignes($data, $id)
+    {
+       $this->em->getRepository(JiraProject::class)->addNewLignes($data, $id);
+       return [
+            'code' => 200,
+            'message' => 'Lignes added'
+        ];
+    }
 }

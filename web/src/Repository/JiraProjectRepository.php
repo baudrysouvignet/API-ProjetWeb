@@ -201,4 +201,29 @@ class JiraProjectRepository extends ServiceEntityRepository
         }
 
     }
+
+    function addNewLignes($data, $id)
+    {
+        $project = $this->findOneBy(
+            ['id' => $id]
+        );
+
+        //supprimer les lignes du projet
+        $lignes = $project->getLignes();
+        foreach ($lignes as $ligne) {
+            $this->em->remove($ligne);
+        }
+        $this->em->flush();
+
+        foreach ($data['ligne'] as $ligne) {
+            $lignes = (new Lignes())
+                ->setProject($project)
+                ->setType(
+                    $this->em->getRepository(TypesLignes::class)->findOneBy(['id' => $ligne['id_type_champs']])
+                )
+                ->setPrompt($ligne['prompt']);
+            $this->em->persist($lignes);
+        }
+        $this->em->flush();
+    }
 }

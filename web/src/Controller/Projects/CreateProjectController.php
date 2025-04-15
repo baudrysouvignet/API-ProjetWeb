@@ -61,7 +61,7 @@ class CreateProjectController extends AbstractController
         return new JsonResponse($projectsManager->getProject($this->getUser()));
     }
 
-    #[Route('/api/user/projects/set/description/{platform}/{id}', name: 'app_projects_get_project', methods: ['GET'])]
+    #[Route('/api/user/projects/set/descriptdescion/{platform}/{id}', name: 'app_projects__project', methods: ['GET'])]
     public function description(
         ProjectsManager $projectsManager,
         int $id,

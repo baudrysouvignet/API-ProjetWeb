@@ -90,4 +90,23 @@ class ProjectsManager
             'message' => 'Invalid project type'
         ], JsonResponse::HTTP_BAD_REQUEST);
     }
+
+    public function setLignes(array $data, int $id, string $type) {
+        $services = [];
+        foreach (glob(__DIR__ . '/Types/*.php') as $file) {
+            $services[] = basename($file, '.php');
+        }
+
+        foreach ($services as $service) {
+            $service = 'App\Service\Projects\Types\\' . $service;
+            $service = new $service($this->em);
+            if ($service->isValidate($type)) {
+                return new JsonResponse($service->setLignes($data, $id));
+            }
+        }
+        return new JsonResponse([
+            'code' => 400,
+            'message' => 'Invalid project type'
+        ], JsonResponse::HTTP_BAD_REQUEST);
+    }
 }
